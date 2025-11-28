@@ -78,6 +78,16 @@ type Model struct {
 	keys keyMap
 }
 
+// Serial setup menu item indices
+const (
+	serialSetupPort = iota
+	serialSetupBaudRate
+	serialSetupDataBits
+	serialSetupStopBits
+	serialSetupConnect
+	serialSetupMenuItemCount
+)
+
 // menuItem represents a menu option
 type menuItem struct {
 	key   string
@@ -363,7 +373,7 @@ func (m Model) handleSerialSetupKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.menuIndex--
 		}
 	case "down", "j":
-		if m.menuIndex < 4 {
+		if m.menuIndex < serialSetupMenuItemCount-1 {
 			m.menuIndex++
 		}
 	case "enter":
@@ -436,7 +446,7 @@ func (m Model) selectMenuItem() (tea.Model, tea.Cmd) {
 
 func (m *Model) handleSerialSetupSelect() (tea.Model, tea.Cmd) {
 	switch m.menuIndex {
-	case 0: // Port selection
+	case serialSetupPort:
 		m.currentView = ViewPortList
 		m.portIndex = 0
 		// Find current port in list
@@ -446,7 +456,7 @@ func (m *Model) handleSerialSetupSelect() (tea.Model, tea.Cmd) {
 				break
 			}
 		}
-	case 4: // Connect/Disconnect
+	case serialSetupConnect:
 		if m.connected {
 			m.disconnect()
 		} else {
@@ -460,10 +470,9 @@ func (m *Model) adjustSerialSetting(delta int) {
 	baudRates := []int{300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400}
 	dataBitsOptions := []int{5, 6, 7, 8}
 	stopBitsOptions := []int{1, 2}
-	parityOptions := []string{"None", "Even", "Odd", "Mark", "Space"}
 
 	switch m.menuIndex {
-	case 1: // Baud rate
+	case serialSetupBaudRate:
 		idx := 0
 		for i, b := range baudRates {
 			if b == m.baudRate {
@@ -478,7 +487,7 @@ func (m *Model) adjustSerialSetting(delta int) {
 			idx = 0
 		}
 		m.baudRate = baudRates[idx]
-	case 2: // Data bits
+	case serialSetupDataBits:
 		idx := 0
 		for i, d := range dataBitsOptions {
 			if d == m.dataBits {
@@ -493,7 +502,7 @@ func (m *Model) adjustSerialSetting(delta int) {
 			idx = 0
 		}
 		m.dataBits = dataBitsOptions[idx]
-	case 3: // Stop bits
+	case serialSetupStopBits:
 		idx := 0
 		for i, s := range stopBitsOptions {
 			if s == m.stopBits {
@@ -508,21 +517,6 @@ func (m *Model) adjustSerialSetting(delta int) {
 			idx = 0
 		}
 		m.stopBits = stopBitsOptions[idx]
-	case 4: // Parity (reusing index 4, but we can skip for action)
-		idx := 0
-		for i, p := range parityOptions {
-			if p == m.parity {
-				idx = i
-				break
-			}
-		}
-		idx += delta
-		if idx < 0 {
-			idx = len(parityOptions) - 1
-		} else if idx >= len(parityOptions) {
-			idx = 0
-		}
-		m.parity = parityOptions[idx]
 	}
 }
 
@@ -643,8 +637,12 @@ func (m Model) renderTerminalView() string {
 }
 
 func (m Model) renderStatusBar() string {
+	parityChar := "N"
+	if len(m.parity) > 0 {
+		parityChar = string(m.parity[0])
+	}
 	portInfo := fmt.Sprintf(" %s | %d %d%s%d ",
-		m.port, m.baudRate, m.dataBits, string(m.parity[0]), m.stopBits)
+		m.port, m.baudRate, m.dataBits, parityChar, m.stopBits)
 
 	connStatus := "OFFLINE"
 	if m.connected {

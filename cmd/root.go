@@ -48,7 +48,7 @@ func Execute() {
 
 func init() {
 
-	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9600, "set baudrate")
+	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9600, "set baud rate")
 	rootCmd.Flags().StringVarP(&port, "port", "p", "", "set port (e.g., /dev/ttyUSB0 or COM1)")
 
 	// Here you will define your flags and configuration settings.
