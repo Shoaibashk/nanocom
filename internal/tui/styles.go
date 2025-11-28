@@ -7,101 +7,83 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Color palette for minicom-like appearance
+// Stock Charm color palette using adaptive colors
 var (
-	// Primary colors
-	primaryColor   = lipgloss.Color("#00AAFF")
-	secondaryColor = lipgloss.Color("#FFFFFF")
-	bgColor        = lipgloss.Color("#000033")
-	accentColor    = lipgloss.Color("#FFFF00")
-	errorColor     = lipgloss.Color("#FF0000")
-	successColor   = lipgloss.Color("#00FF00")
-	menuBgColor    = lipgloss.Color("#000066")
-	menuBorderCol  = lipgloss.Color("#0088FF")
-	highlightColor = lipgloss.Color("#00FFFF")
+	primaryColor   = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	secondaryColor = lipgloss.AdaptiveColor{Light: "#343433", Dark: "#C1C1C1"}
+	accentColor    = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
+	errorColor     = lipgloss.AdaptiveColor{Light: "#FF0000", Dark: "#FF6666"}
+	successColor   = lipgloss.AdaptiveColor{Light: "#00AA00", Dark: "#00FF00"}
+	warningColor   = lipgloss.AdaptiveColor{Light: "#FFAA00", Dark: "#FFCC00"}
+	mutedColor     = lipgloss.AdaptiveColor{Light: "#888888", Dark: "#626262"}
+	highlightColor = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
 )
 
-// Styles for various UI components
+// Styles for various UI components - Stock Charm styling
 var (
 	// Base styles
-	baseStyle = lipgloss.NewStyle().
-			Background(bgColor).
-			Foreground(secondaryColor)
+	baseStyle = lipgloss.NewStyle()
 
 	// Status bar at the bottom
 	statusBarStyle = lipgloss.NewStyle().
-			Background(lipgloss.Color("#0044AA")).
-			Foreground(secondaryColor).
-			Bold(true).
 			Padding(0, 1)
 
 	// Title bar at the top
 	titleBarStyle = lipgloss.NewStyle().
-			Background(lipgloss.Color("#0044AA")).
-			Foreground(accentColor).
 			Bold(true).
 			Padding(0, 1)
 
 	// Menu styles
 	menuStyle = lipgloss.NewStyle().
-			Background(menuBgColor).
-			Foreground(secondaryColor).
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(menuBorderCol).
 			Padding(1, 2)
 
 	menuTitleStyle = lipgloss.NewStyle().
-			Foreground(accentColor).
 			Bold(true).
-			Underline(true).
 			MarginBottom(1)
 
 	menuItemStyle = lipgloss.NewStyle().
-			Foreground(secondaryColor).
-			PaddingLeft(1)
+			PaddingLeft(2)
 
 	menuSelectedStyle = lipgloss.NewStyle().
-				Background(highlightColor).
-				Foreground(lipgloss.Color("#000000")).
+				Foreground(primaryColor).
 				Bold(true).
-				PaddingLeft(1)
+				PaddingLeft(2)
 
 	menuHotkeyStyle = lipgloss.NewStyle().
-			Foreground(accentColor).
+			Foreground(highlightColor).
 			Bold(true)
 
 	// Terminal view style
 	terminalStyle = lipgloss.NewStyle().
-			Background(bgColor).
-			Foreground(successColor)
+			Padding(0, 1)
 
 	// Help text style
 	helpStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#666666")).
-			Italic(true)
+			Foreground(mutedColor)
 
 	// Border style for panels
 	panelStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(menuBorderCol).
-			Padding(0, 1)
+			Padding(1, 2)
 
 	// Input field style
 	inputStyle = lipgloss.NewStyle().
-			Background(lipgloss.Color("#003366")).
-			Foreground(secondaryColor).
+			Border(lipgloss.RoundedBorder()).
 			Padding(0, 1)
+
+	// Input prompt style
+	inputPromptStyle = lipgloss.NewStyle().
+				Foreground(primaryColor).
+				Bold(true)
 
 	// Label style
 	labelStyle = lipgloss.NewStyle().
-			Foreground(primaryColor).
 			Bold(true)
 
 	// Dialog box style
 	dialogStyle = lipgloss.NewStyle().
-			Background(menuBgColor).
-			Border(lipgloss.DoubleBorder()).
-			BorderForeground(accentColor).
+			Border(lipgloss.RoundedBorder()).
 			Padding(1, 2).
 			Align(lipgloss.Center)
 
@@ -113,5 +95,30 @@ var (
 	// Success text style
 	successStyle = lipgloss.NewStyle().
 			Foreground(successColor).
+			Bold(true)
+
+	// Warning text style
+	warningStyle = lipgloss.NewStyle().
+			Foreground(warningColor).
+			Bold(true)
+
+	// Connected status badge
+	connectedStyle = lipgloss.NewStyle().
+			Foreground(successColor).
+			Bold(true).
+			Padding(0, 1)
+
+	// Disconnected status badge
+	disconnectedStyle = lipgloss.NewStyle().
+				Foreground(errorColor).
+				Bold(true).
+				Padding(0, 1)
+
+	// Divider style
+	dividerStyle = lipgloss.NewStyle()
+
+	// Logo/brand style
+	logoStyle = lipgloss.NewStyle().
+			Foreground(primaryColor).
 			Bold(true)
 )
