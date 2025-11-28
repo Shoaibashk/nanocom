@@ -1,15 +1,14 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Shoaibashk Shoaibashk.2000@gmail.com
 */
 package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/shoaibashk/nanocom/internal/tui"
 	"github.com/spf13/cobra"
-	"go.bug.st/serial"
 )
 
 var (
@@ -21,37 +20,21 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "nanocom",
 	Short: "Mighty friendly nano serial communication program",
-	Long: `nanocom is a serial communication program.
+	Long: `nanocom is a cross-platform serial communication program with a TUI interface.
 
-Used by developers in embedded systems and host machine to communicate serial devices.`,
+It is designed to resemble minicom and provides an intuitive terminal interface
+for communicating with serial devices such as embedded systems, modems, and routers.
+
+Usage:
+  nanocom                    Start with TUI (use Ctrl-A Z for help)
+  nanocom -p /dev/ttyUSB0    Start with specific port
+  nanocom -b 115200          Start with specific baud rate`,
 	Run: func(cmd *cobra.Command, args []string) {
-		mode := &serial.Mode{
-			BaudRate: baudrate,
+		if err := tui.Run(port, baudrate); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
 		}
-		op, err := serial.Open(port, mode)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		buff := make([]byte, 100)
-		for {
-			n, err := op.Read(buff)
-			if err != nil {
-				log.Fatal(err)
-				break
-			}
-			if n == 0 {
-				fmt.Println("\nEOF")
-				break
-			}
-			fmt.Printf("%v", string(buff[:n]))
-		}
-		// cmd.Help()
-
 	},
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,22 +48,12 @@ func Execute() {
 
 func init() {
 
-	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9200, "set baudrate (ignore the value from config)")
-
-	// if err := rootCmd.MarkFlagRequired("baudrate"); err != nil {
-	// 	fmt.Println(err)
-	// }
-	rootCmd.Flags().StringVarP(&port, "port", "p", "COM2", "set port (ignore the value from config)")
-
-	// list := rootCmd.Flags().StringP("list","l","/dev/tty1","Get available list of serial port")
+	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9600, "set baud rate")
+	rootCmd.Flags().StringVarP(&port, "port", "p", "", "set port (e.g., /dev/ttyUSB0 or COM1)")
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nanocom.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
