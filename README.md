@@ -254,6 +254,13 @@ go run .
 go test ./...
 ```
 
+## Release Process
+
+- Follow [Semantic Versioning](https://semver.org/) for every git tag: `vMAJOR.MINOR.PATCH` (for example `v0.2.0`).
+- Create annotated tags so release notes include author/date: `git tag -a v0.2.0 -m "Release v0.2.0"`.
+- Push the tag (`git push origin v0.2.0`) to trigger the `release` workflow, which signs artifacts with GoReleaser.
+- Let GitHub Actions finish and confirm the release shows a verified signature before announcing the build.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
