@@ -53,9 +53,10 @@ signs:
       - --passphrase
       - "{{ .Env.GPG_PASSPHRASE }}"
       - --output
-      - "{{ .Signature }}"
+      - "{{ .ArtifactPath }}.sig"
       - --detach-sign
       - "{{ .ArtifactPath }}"
+    signature: "{{ .ArtifactPath }}.sig"
 
 changelog:
   sort: asc
