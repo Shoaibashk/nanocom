@@ -26,6 +26,11 @@ jobs:
       - name: Validate release tag
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
+          # Skip validation for workflow_dispatch if no tag context
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -z "${TAG_NAME}" ]]; then
+            echo "::warning::Manual trigger without tag. Use 'git tag' and push to trigger a proper release."
+            exit 1
+          fi
           if [[ -z "${TAG_NAME}" ]]; then
             echo "No git tag detected. Ensure this workflow runs from a tag push." >&2
             exit 1
