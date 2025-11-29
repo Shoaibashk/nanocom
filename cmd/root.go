@@ -27,8 +27,8 @@ for communicating with serial devices such as embedded systems, modems, and rout
 
 Usage:
   nanocom                    Start with TUI (use Ctrl-A Z for help)
-  nanocom -p /dev/ttyUSB0    Start with specific port
-  nanocom -b 115200          Start with specific baud rate`,
+  nanocom -p COM3 -b 115200  Connect directly to port with baud rate
+  nanocom -p /dev/ttyUSB0    Start with specific port (auto-connects)`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := tui.Run(port, baudrate); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)

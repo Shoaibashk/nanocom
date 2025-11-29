@@ -10,7 +10,7 @@
 
 *A lightweight, feature-rich serial terminal with a beautiful minicom-inspired TUI, built entirely in Go*
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Architecture](#-architecture) • [Contributing](#-contributing)
+[Features](#features) • [Why nanocom?](#why-nanocom) • [Getting Started](#getting-started) • [Usage](#usage) • [Architecture](#architecture) • [Contributing](#contributing)
 
 </div>
 
@@ -22,36 +22,32 @@
 
 Built with the elegant [Charm](https://charm.sh/) ecosystem, nanocom combines the familiarity of classic tools like minicom with modern Go performance and a beautiful, responsive TUI.
 
-## ✨ Features
+## Why nanocom?
 
-<table>
-<tr>
-<td width="50%">
+- 💡 **Developer-first ergonomics** – Every interaction is mapped to predictable key bindings, live reconfiguration, and clear visual feedback.
+- ⚙️ **Instant onboarding** – Single static binary, zero dependencies, and intuitive defaults to start shipping logs in under a minute.
+- 🛡️ **Production-grade reliability** – Asynchronous I/O, precise buffering, and configurable session logging keep critical data intact.
+- 🤝 **Friendly Contribution Surface** – Modular Go packages, documented architecture, and formatter-friendly code make pull requests painless.
 
-### 🖥️ Cross-Platform
-Works seamlessly on Linux, macOS, and Windows with native serial port support
+## Features
 
-### 🎨 Beautiful TUI
-Minicom-inspired interface with adaptive colors, rounded borders, and smooth interactions
+### Developer Experience
 
-### ⚡ Real-Time Communication
-Asynchronous serial I/O with buffered reads and responsive input handling
+- 🖥️ Cross-platform support across Linux, macOS, and Windows with native serial handling
+- 🎨 Minicom-inspired TUI with adaptive colors, rounded borders, and subtle animations
+- ⚡ Real-time asynchronous I/O so keystrokes, logs, and transfers never block each other
 
-</td>
-<td width="50%">
+### Productivity Boosters
 
-### 📁 File Transfer
-Built-in support for Zmodem, Xmodem, and Ymodem protocols
+- 📁 Built-in X/Y/Zmodem flows powered by [trzsz-go](https://github.com/trzsz/trzsz-go) for reliable file transfer sessions
+- 📝 Session logging with rolling files for copy/paste-friendly transcripts
+- 🔧 Live-tunable serial settings (baud, data bits, parity, endings) without restarting
 
-### 📝 Session Logging
-Capture serial output to file for debugging and documentation
+### Power Tools
 
-### 🔧 Fully Configurable
-Adjust baud rate, data bits, stop bits, parity, and line endings on the fly
-
-</td>
-</tr>
-</table>
+- 🔍 Auto port discovery and smart defaults for USB-UART devices
+- ⌨️ Vim-style navigation with both arrow and hjkl bindings
+- 🚀 Zero external dependencies—ship a single binary to your team
 
 ### Additional Features
 
@@ -61,29 +57,43 @@ Adjust baud rate, data bits, stop bits, parity, and line endings on the fly
 - **💾 Persistent Settings** - Configure once, use everywhere
 - **🚀 Zero Dependencies** - Single binary, no runtime dependencies
 
-## 📦 Installation
+## Getting Started
 
-### Using Go Install (Recommended)
+1. **Install the CLI**
 
-```bash
-go install github.com/shoaibashk/nanocom@latest
-```
+    ```bash
+    go install github.com/shoaibashk/nanocom@latest
+    ```
 
-### Build from Source
+2. **(Optional) Build From Source**
 
-```bash
-git clone https://github.com/shoaibashk/nanocom.git
-cd nanocom
-go build -o nanocom .
-```
+    ```bash
+    git clone https://github.com/shoaibashk/nanocom.git
+    cd nanocom
+    go build -o nanocom .
+    ```
 
-### Verify Installation
+3. **Validate Your Setup**
 
-```bash
-nanocom --help
-```
+    ```bash
+    nanocom --help
+    ```
 
-## 🚀 Usage
+4. **Connect**
+
+    ```bash
+    nanocom -p /dev/ttyUSB0 -b 115200   # Linux / macOS
+    nanocom -p COM3 -b 115200           # Windows
+    ```
+
+### Developer Checklist
+
+- [x] Go 1.24+ installed
+- [x] Serial device connected (USB, UART, etc.)
+- [x] User in dialout/serial group (Linux)
+- [x] Terminal supports truecolor for best TUI experience
+
+## Usage
 
 ### Quick Start
 
@@ -107,6 +117,39 @@ nanocom -p /dev/ttyUSB0 -b 115200
 ```bash
 nanocom list
 ```
+
+## 📁 File Transfers (X/Y/Zmodem)
+
+nanocom routes file transfers through the embedded [trzsz-go](https://github.com/trzsz/trzsz-go) filter, so you get a modern trz/tsz workflow while staying compatible with classic `rz`/`sz` tooling. When a transfer is staged, the status bar shows a spinner so you can tell the terminal is waiting on the remote endpoint.
+
+### Sending files to the remote host
+
+1. Press `Ctrl+A`, then `S`, and enter the local file or directory path.
+2. After the dialog closes, look for the terminal hint that lists the command to run remotely.
+3. Run the matching command on the device you are connected to:
+
+    | Protocol | Remote command |
+    |----------|----------------|
+    | Zmodem   | `rz -y`        |
+    | Ymodem   | `rb -y`        |
+    | Xmodem   | `rx`           |
+
+4. The spinner disappears and nanocom logs the result once trzsz reports completion or an error.
+
+### Receiving files from the remote host
+
+1. Press `Ctrl+A`, then `R`, and choose the directory where incoming files should be saved.
+2. Ask the remote endpoint to start the transfer with the appropriate command:
+
+    | Protocol | Remote command example |
+    |----------|------------------------|
+    | Zmodem   | `sz firmware.bin`      |
+    | Ymodem   | `sb *.bin`             |
+    | Xmodem   | `sx boot.img`          |
+
+3. Files are written to the directory you selected, and nanocom appends a completion line to the terminal buffer.
+
+> **Tip:** Inside either transfer dialog you can press `Ctrl+P` to cycle protocols if the connected device only speaks a specific modem flavor.
 
 ## ⌨️ Key Bindings
 
@@ -136,11 +179,11 @@ nanocom uses a minicom-compatible command mode. Press `Ctrl-A` followed by a com
 | `Enter` | Select / Confirm |
 | `Esc` | Back / Cancel |
 
-## 🏗️ Architecture
+## Architecture
 
 nanocom is built with a clean, modular architecture following Go best practices:
 
-```
+```text
 nanocom/
 ├── main.go                 # Application entry point
 ├── cmd/                    # CLI commands (Cobra)
@@ -170,7 +213,7 @@ nanocom/
 - **Goroutine-based I/O** - Non-blocking serial reads with channel communication
 - **Adaptive Theming** - Automatic light/dark mode based on terminal settings
 
-## 🔧 Configuration
+## Configuration
 
 ### Serial Port Settings
 
@@ -184,7 +227,7 @@ Configure these settings via the TUI (`Ctrl-A O`) or command flags:
 | **Parity** | None, Even, Odd | None |
 | **Line Ending** | NL, CR, CRLF, None | CRLF |
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how you can help:
 
@@ -211,16 +254,10 @@ go run .
 go test ./...
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-<div align="center">
-
-**Built with ❤️ by [Shoaibashk](https://github.com/shoaibashk)**
-
-⭐ Star this repo if you find it useful!
-
-</div>
+**Built with ❤️ by [Shoaibashk](https://github.com/shoaibashk)** · ⭐ Star the repo if it streamlines your serial workflows!

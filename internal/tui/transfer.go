@@ -228,3 +228,48 @@ func (l *LoggingState) GetFilePath() string {
 func (l *LoggingState) GetStats() (lineCount int, byteCount int64) {
 	return l.lineCount, l.byteCount
 }
+
+func protocolCommand(direction TransferDirection, protocol TransferProtocol) string {
+	switch protocol {
+	case ProtocolZmodem:
+		if direction == TransferSend {
+			return "rz -y"
+		}
+		return "sz"
+	case ProtocolXmodem:
+		if direction == TransferSend {
+			return "rx"
+		}
+		return "sx"
+	case ProtocolYmodem:
+		if direction == TransferSend {
+			return "rb -y"
+		}
+		return "sb"
+	default:
+		return ""
+	}
+}
+
+func expandPath(path string) (string, error) {
+	trimmed := strings.TrimSpace(path)
+	if trimmed == "" {
+		return "", fmt.Errorf("path is required")
+	}
+	if strings.HasPrefix(trimmed, "~") {
+		home, err := os.UserHomeDir()
+		if err == nil {
+			switch {
+			case trimmed == "~":
+				trimmed = home
+			case len(trimmed) > 1 && (trimmed[1] == '/' || trimmed[1] == '\\'):
+				trimmed = filepath.Join(home, trimmed[2:])
+			}
+		}
+	}
+	absPath, err := filepath.Abs(trimmed)
+	if err != nil {
+		return "", err
+	}
+	return absPath, nil
+}
