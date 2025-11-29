@@ -5,7 +5,6 @@ package main
 
 import "github.com/shoaibashk/nanocom/cmd"
 
-
 func main() {
 	cmd.Execute()
 }
