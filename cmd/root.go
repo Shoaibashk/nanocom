@@ -47,13 +47,6 @@ func Execute() {
 }
 
 func init() {
-
-	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9600, "set baud rate")
-	rootCmd.Flags().StringVarP(&port, "port", "p", "", "set port (e.g., /dev/ttyUSB0 or COM1)")
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nanocom.yaml)")
+	rootCmd.Flags().IntVarP(&baudrate, "baudrate", "b", 9600, "Set baud rate for serial communication")
+	rootCmd.Flags().StringVarP(&port, "port", "p", "", "Specify serial port (e.g., /dev/ttyUSB0 or COM1)")
 }

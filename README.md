@@ -39,7 +39,7 @@ Built with the elegant [Charm](https://charm.sh/) ecosystem, nanocom combines th
 
 ### Productivity Boosters
 
-- 📁 Built-in X/Y/Zmodem flows powered by [trzsz-go](https://github.com/trzsz/trzsz-go) for reliable file transfer sessions
+- 📁 Built-in X/Y/Zmodem flows powered by [trzsz-go](https://github.com/trzsz/trzsz-go) for reliable file transfer sessions (Under Development 🍃)
 - 📝 Session logging with rolling files for copy/paste-friendly transcripts
 - 🔧 Live-tunable serial settings (baud, data bits, parity, endings) without restarting
 
@@ -181,21 +181,59 @@ nanocom uses a minicom-compatible command mode. Press `Ctrl-A` followed by a com
 
 ## Architecture
 
-nanocom is built with a clean, modular architecture following Go best practices:
+nanocom is built with a **clean, modular architecture** following Go best practices. The TUI layer is organized into focused packages, each with a single responsibility:
 
 ```text
 nanocom/
 ├── main.go                 # Application entry point
 ├── cmd/                    # CLI commands (Cobra)
-│   ├── root.go            # Root command & flags
-│   ├── list.go            # Port listing command
-│   └── config.go          # Configuration command
+│   ├── root.go             # Root command & flags
+│   ├── list.go             # Port listing command
+│   └── config.go           # Configuration command
 └── internal/
-    └── tui/               # Terminal UI (Bubble Tea)
-        ├── model.go       # TUI state & logic
-        ├── styles.go      # Lipgloss styling
-        └── transfer.go    # File transfer protocols
+    └── tui/                # Terminal UI (Bubble Tea)
+        ├── app.go          # Entry point & tea.Model wrapper
+        ├── state/          # View states & messages
+        │   ├── viewstate.go    # ViewState enum
+        │   └── messages.go     # All tea.Msg types
+        ├── keys/           # Key bindings
+        │   └── keys.go         # Key map definitions
+        ├── serial/         # Serial communication
+        │   ├── connection.go   # Config & connection logic
+        │   ├── reader.go       # Async serial reader
+        │   └── ports.go        # Port discovery
+        ├── transfer/       # File transfers
+        │   ├── state.go        # Transfer state & protocol
+        │   ├── trzsz.go        # trzsz bridge
+        │   └── utils.go        # Path utilities
+        ├── logging/        # Session capture
+        │   └── state.go        # Logging state
+        ├── menu/           # Menu definitions
+        │   └── menu.go         # Menu items & constants
+        ├── model/          # Core model
+        │   └── model.go        # Main Model struct
+        ├── update/         # Event handling
+        │   └── update.go       # Update function & handlers
+        ├── views/          # UI rendering
+        │   └── views.go        # All view render functions
+        └── styles/         # Visual styling
+            └── styles.go       # Colors & lipgloss styles
 ```
+
+### Package Responsibilities
+
+| Package | Purpose |
+|---------|---------|
+| `state` | View state enum and all message types |
+| `keys` | Key bindings configuration |
+| `serial` | Serial port connection, reading, and port discovery |
+| `transfer` | File transfer state, protocols, and trzsz bridge |
+| `logging` | Session capture to file |
+| `menu` | Menu item definitions |
+| `model` | Main application model and state |
+| `update` | Message handling and business logic |
+| `views` | All UI rendering functions |
+| `styles` | Colors, themes, and lipgloss styles |
 
 ### Tech Stack
 
